@@ -4,7 +4,7 @@
   <a href="https://github.com/zenglhardt/convfill-dataset"><img src="https://img.shields.io/badge/GitHub-Dataset-blue?style=flat&logo=github" alt="GitHub Dataset" /></a>&nbsp;
   <a href="https://huggingface.co/datasets/zenglhardt/convfill-dataset"><img src="https://img.shields.io/badge/🤗%20HuggingFace-Dataset-yellow?style=flat" alt="HuggingFace Dataset" /></a>&nbsp;
   <a href="https://arxiv.org/abs/2511.07397"><img src="https://img.shields.io/badge/arXiv-2511.07397-b31b1b?style=flat&logo=arxiv" alt="arXiv" /></a>&nbsp;
-  <a href="#"><img src="https://img.shields.io/badge/🤗%20HuggingFace-Collection-yellow?style=flat" alt="HuggingFace Collection" /></a>
+  <a href="https://huggingface.co/collections/vysri/convfill-inference-time-knowledge-transfer-for-responsive-a"><img src="https://img.shields.io/badge/🤗%20HuggingFace-Collection-yellow?style=flat" alt="HuggingFace Collection" /></a>
 </p>
 This repository contains the training and inference code for ConvFill a dual model collaboration system pairing a small, lightweight `Talker` model with a powerful cloud `Reasoner` model. During inference, the `Talker` has two roles. It consumes raw, inference-time information from the `Reasoner` _when available_ and transforms it into fluent, contingent conversation and it produces fast, conversationally contingent filler phrases to hide `Reasoner` latency _when necessary_.
 
