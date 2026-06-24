@@ -1,0 +1,11 @@
+{
+    "frontend_model_config_path": "configs/convfill_frontend_configs/convfill_gemma3IT_270M_nd.json",
+    "frontend_checkpoint_dir": "final_model_checkpoints",
+    "backend_prompt_template_file": "configs/convfill_backend_prompts/convfill_backend_template_conv.txt",
+    "backend_model_name": "claude-haiku-4-5-20251001",
+    "backend_model_mode": "claude",
+    "mode": "normal",
+    "num_history_turns": 1,
+    "tts_mode": "say",
+    "tts_model_path": "src/tts/en_US-ryan-high.onnx"
+}

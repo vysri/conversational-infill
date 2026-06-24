@@ -1,0 +1,40 @@
+{
+  "model_name": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+  "backend": "mlx",
+  "dataset_path": "your dataset path here",
+  "dataset_mode": "full",
+  "platform": "gpu",
+  "wanb_project": "convfill",
+  "training_split_percent": 0.9,
+
+  "add_special_tokens": true,
+  "special_tokens": {
+    "additional_special_tokens": ["<sil>"]
+  },
+
+  "boundary_tokens": {
+    "USER_START": "<|im_start|>user\n",
+    "KNOWLEDGE_START": "<|im_start|>knowledge\n",
+    "ASSN_START": "<|im_start|>assistant\n",
+    "END": "<|im_end|>\n"
+  },
+
+  "training_config": {
+    "batch_size": 2,
+    "accumulate_grad_batches": 4,
+    "num_epochs": 1,
+    "learning_rate": 1e-4,
+    "weight_decay": 0.01,
+    "warmup_steps": 200,
+    "scheduler": "cosine",
+    "val_check_interval": 0.25
+  },
+
+  "logging_config": {
+    "log_every_n_steps": 10
+  },
+
+  "checkpoint_config": {
+    "every_n_train_steps": 50
+  }
+}

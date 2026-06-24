@@ -1,0 +1,17 @@
+{
+    "frontend_model_config_path": "configs/convfill_frontend_configs/convfill_gemma3IT_270M_nd.json",
+    "frontend_checkpoint_dir": "final_model_checkpoints",
+    "backend_prompt_template_file": "configs/convfill_backend_prompts/convfill_backend_template_rag_conv.txt",
+    "backend_model_name": "claude-haiku-4-5-20251001",
+    "backend_model_mode": "claude",
+    "num_history_turns": 1,
+    "tts_mode": "say",
+    "tts_model_path": "src/tts/en_US-ryan-high.onnx",
+    "mode": "rag",
+    "task_specific_config": {
+        "rag_index": "src/inference/rag/uw_phd.index",
+        "rag_chunks": "src/inference/rag/uw_chunks.json",
+        "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        "embedding_model": "text-embedding-3-large"
+    }
+}
