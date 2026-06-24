@@ -242,8 +242,8 @@ If you found this codebase helpful, please cite
 ```
 @misc{srinivas2026convfill,
   title={Thinking While Speaking: Inference-Time Knowledge Transfer for Responsive and Intelligent Conversational Voice Agents}, 
-  author={Vidya Srinivas and Zachary Englhardt and Maximus Powers and Shwetak Patel and Vikram Iyer},
-  year={2026},
+  author={Vidya Srinivas and Zachary Englhardt and Vikram Iyer and Shwetak Patel},
+  year={2025},
   eprint={2511.07397},
   archivePrefix={arXiv},
   primaryClass={cs.CL},
