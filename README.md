@@ -78,7 +78,7 @@ These are the configs in `configs/convfill_frontend_configs`, each pointing at a
 
 These are the models we have tested as ConvFill frontends, but they are not the only options — you can train any compatible HuggingFace model as a frontend using our training scripts and dataset (see [Training a Frontend Model](#training-a-frontend-model)).
 
-### Backend (cloud) models
+### Backend (API) models
 
 Set the backend model via `backend_model_name` / `backend_model_mode` in a `configs/demo_mode/*.json`. Available names per provider (`configs/backend_model_configs/<provider>/model_names.json`):
 
@@ -242,7 +242,7 @@ If you found this codebase helpful, please cite
 ```
 @misc{srinivas2026convfill,
   title={Thinking While Speaking: Inference-Time Knowledge Transfer for Responsive and Intelligent Conversational Voice Agents}, 
-  author={Vidya Srinivas and Zachary Englhardt and Vikram Iyer and Shwetak Patel},
+  author={Vidya Srinivas and Zachary Englhardt and Maximus Powers and Shwetak Patel and Vikram Iyer},
   year={2026},
   eprint={2511.07397},
   archivePrefix={arXiv},
