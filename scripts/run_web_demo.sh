@@ -15,8 +15,7 @@ if ! command -v ffmpeg >/dev/null 2>&1; then
 fi
 
 if [ ! -d "$WEB_DEMO_DIR/frontend/node_modules" ]; then
-  echo "[setup] installing frontend deps (first run)..."
-  (cd "$WEB_DEMO_DIR/frontend" && npm ci)
+  echo "[ERROR] frontend npm dependencies not found..."
 fi
 
 BACKEND_PID=""
