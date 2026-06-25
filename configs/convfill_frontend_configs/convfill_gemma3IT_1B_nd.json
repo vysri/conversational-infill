@@ -1,5 +1,7 @@
 {
   "model_name": "google/gemma-3-1b-it",
+  "convfill_hf_pretrained_path": "vysri/gemma3-1b-IT-ConvFill",
+  "convfill_hf_mlx_pretrained_path":"vysri/gemma3-1b-IT-ConvFill_mlx_q8",
   "backend": "mlx",
   "dataset_path": "your dataset path here",
   "dataset_mode": "full",

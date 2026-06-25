@@ -1,6 +1,8 @@
 {
   "model_name": "meta-llama/Llama-3.2-1B-Instruct",
   "backend": "mlx",
+  "convfill_hf_pretrained_path": "vysri/Llama-3.2-1B-IT-ConvFill",
+  "convfill_hf_mlx_pretrained_path":"vysri/Llama-3.2-1B-IT-ConvFill_mlx_q8",
   "dataset_path": "your dataset path here",
   "dataset_mode": "full",
   "platform": "gpu",

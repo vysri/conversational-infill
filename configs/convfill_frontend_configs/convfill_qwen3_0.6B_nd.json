@@ -1,6 +1,8 @@
 {
   "model_name": "Qwen/Qwen3-0.6B",
   "backend": "mlx",
+  "convfill_hf_pretrained_path": "vysri/Qwen-0.6B-ConvFill",
+  "convfill_hf_mlx_pretrained_path":"vysri/Qwen-0.6B-ConvFill_mlx_q8",
   "dataset_path": "your dataset path here",
   "dataset_mode": "full",
   "platform": "gpu",

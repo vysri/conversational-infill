@@ -1,6 +1,8 @@
 {
   "model_name": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
   "backend": "mlx",
+  "convfill_hf_pretrained_path": "vysri/SmolLM1.7B-IT-ConvFill",
+  "convfill_hf_mlx_pretrained_path":"vysri/SmolLM1.7B-IT-ConvFill_mlx_q8",
   "dataset_path": "your dataset path here",
   "dataset_mode": "full",
   "platform": "gpu",
