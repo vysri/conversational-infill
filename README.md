@@ -64,7 +64,7 @@ npm ci
 cd ../..
 ```
 
-# Repository Walkthrough
+# Repository Contents
 
 Before providing any of the details of the code, we first will walk through the structure of the training and inference code.
 
@@ -123,8 +123,9 @@ Set the backend model via `backend_model_name` / `backend_model_mode` in a `conf
 | `openai` | `gpt-4o`, `gpt-4-turbo`, `gpt-5.5`, `gpt-5.4`, `gpt-5.4-mini`, `gpt5.4-nano` |
 | `gemini` | `gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-3-flash-preview`, `gemini-3.1-flash-lite-preview`, `gemini-3.1-pro-preview` |
 
-# Generating Training Data
+# Training a `Talker` Model
 
+## Prepare the dataset
 `dataset_gen/dataset_preprocess.py` converts a folder of raw conversations (from the synthetic data pipeline) into the single formatted JSONL file used to train the frontend models — the same format as the examples in `data`.
 
 It reads **every file** in `--base_data_dir`, where each file is JSONL and each line is one conversation of the form `{"conversation": [turn, turn, ...]}`. Each turn holds the user message plus *lists* of paired thought/response phrases (the keys are configurable via the `--*_tag` flags). The script validates each turn (it skips conversations with missing fields, empty turns, or mismatched thought/response list lengths), unrolls every turn into its sequence of streaming phrases, and appends the formatted turns to a single output JSONL.
@@ -159,7 +160,7 @@ Arguments:
 | `--responder_tag` | Per-turn key holding the list of response phrases (we use `response`) |
 | `--include_history` | When set, each phrase also carries the running text of the turn's previous responses |
 
-# Training a Frontend Model
+## Model Fine-Tuning
 
 `src/training/finetune_convfill.py` finetunes a HuggingFace model for the ConvFill task using a config from `configs/convfill_frontend_configs`. Run from the repo root:
 
