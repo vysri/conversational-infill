@@ -113,6 +113,33 @@ These are the configs in `configs/convfill_frontend_configs`, each pointing at a
 
 These are the models we have tested as ConvFill frontends, but they are not the only options — you can train any compatible HuggingFace model as a frontend using our training scripts and dataset (see [Training a Frontend Model](#training-a-frontend-model)).
 
+#### Frontend Config Format
+
+Each frontend config file (e.g., `convfill_gemma3IT_270M_nd.json`) specifies the model, training hyperparameters, and inference weight paths. The key fields for inference are:
+
+| Field | Description |
+|-------|-------------|
+| `model_name` | HuggingFace model ID (used for downloading base weights) |
+| `backend` | Inference backend: `"hf"` (HuggingFace/PyTorch) or `"mlx"` (MLX/Apple Silicon) |
+| `convfill_hf_pretrained_path` | HuggingFace model ID or local path to ConvFill-trained weights for HuggingFace backend (bf16 precision) |
+| `convfill_hf_mlx_pretrained_path` | HuggingFace model ID or local path to ConvFill-trained weights for MLX backend (int8 quantized) |
+
+The weight paths can be either HuggingFace model IDs (e.g., `"vysri/gemma3-270m-IT-ConvFill"`) or local filesystem paths (e.g., `"/path/to/local/weights"`).
+
+#### Frontend Precision Options
+
+The web demo exposes a precision dropdown to toggle between two inference configurations:
+
+| Precision | Backend | Format | Use Case |
+|-----------|---------|--------|----------|
+| **bf16** | HuggingFace (PyTorch) | Full precision with bfloat16 | Cross-platform (CPU/CUDA/MPS) |
+| **int8** | MLX (Metal/Apple) | 8-bit quantized | macOS/Apple Silicon only; pre-quantized weights |
+
+- When you select **bf16**, the demo loads `convfill_hf_pretrained_path` weights and runs inference via HuggingFace Transformers.
+- When you select **int8**, the demo loads `convfill_hf_mlx_pretrained_path` weights and runs inference via MLX (Apple Silicon only).
+
+Both precision options appear in the "Frontend precision" dropdown in the web demo menu. The active backend (HuggingFace or MLX) is displayed next to the precision selector.
+
 ### Backend (API) models
 
 Set the backend model via `backend_model_name` / `backend_model_mode` in a `configs/demo_mode/*.json`. Available names per provider (`configs/backend_model_configs/<provider>/model_names.json`):
