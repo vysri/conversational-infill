@@ -15,15 +15,6 @@ logging.getLogger("transformers.utils.loading_report").setLevel(logging.ERROR)
 _MODEL_CACHE: dict = {}
 _MODEL_CACHE_LOCK = threading.Lock()
 
-# Default location of the pre-converted MLX int8 checkpoints. Each subfolder is
-# named "<short_model_id>_mlx_q8" where short_model_id is the part of the HF
-# model name after the org slash (e.g. "Qwen/Qwen3-0.6B" -> "Qwen3-0.6B").
-# Resolved relative to the repo root so the path works for any checkout.
-# __file__ = <repo>/src/inference/single_model_stack/small_model_only/small_model_inference.py
-# parents[4] == repo root.
-_MLX_INT8_DEFAULT_DIR = str(Path(__file__).resolve().parents[4] / "frontend_model_int8")
-_MLX_INT8_SUFFIX = "_mlx_q8"
-
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
@@ -67,32 +58,22 @@ def _resolve_torch_dtype(device: str, dtype: Optional[str]):
     return _resolve_dtype(device)
 
 
-def _resolve_mlx_checkpoint_path(model_name: str, checkpoint_dir: str) -> str:
-    # HF model names are "<org>/<short>"; the MLX int8 folders are named
-    # "<short>_mlx_q8" with the org dropped (see frontend_model_int8/).
-    short = model_name.split("/", 1)[-1]
-    return str(Path(checkpoint_dir) / f"{short}{_MLX_INT8_SUFFIX}")
-
-
 def _load(
     model_name: str,
     device: str,
     dtype: Optional[str] = None,
     backend: str = "hf",
-    checkpoint_dir: Optional[str] = None,
 ):
     if backend == "mlx":
-        resolved_dir = checkpoint_dir or _MLX_INT8_DEFAULT_DIR
-        ckpt_path = _resolve_mlx_checkpoint_path(model_name, resolved_dir)
         # MLX manages dtype + device internally (Metal + quantized weights);
-        # the cache key just needs the resolved checkpoint path.
-        cache_key = ("mlx", ckpt_path)
+        # the cache key just needs the model_name.
+        cache_key = ("mlx", model_name)
         with _MODEL_CACHE_LOCK:
             cached = _MODEL_CACHE.get(cache_key)
             if cached is not None:
                 print(f"[small_model] REUSING CACHED MLX MODEL {model_name}", flush=True)
                 return cached
-            model, tokenizer = _load_mlx(model_name, ckpt_path)
+            model, tokenizer = _load_mlx(model_name, model_name)
             _MODEL_CACHE[cache_key] = (model, tokenizer)
             return model, tokenizer
 
@@ -134,11 +115,6 @@ def _load(
 def _load_mlx(model_name: str, ckpt_path: str):
     import mlx_lm
 
-    if not Path(ckpt_path).exists():
-        raise FileNotFoundError(
-            f"MLX int8 checkpoint not found at {ckpt_path}. Expected a folder "
-            f"named '<short>{_MLX_INT8_SUFFIX}' for model {model_name!r}."
-        )
     print(f"[small_model] LOADING MLX MODEL {model_name} from {ckpt_path}…", flush=True)
     model, tokenizer = mlx_lm.load(ckpt_path)
     print(f"[small_model] LOADED MLX MODEL {model_name}", flush=True)
@@ -192,7 +168,6 @@ class SmallModelInference:
         inference_params: Optional[dict] = None,
         dtype: Optional[str] = None,
         backend: str = "hf",
-        checkpoint_dir: Optional[str] = None,
     ):
         self.model_name = model_name
         self.device = device
@@ -200,9 +175,8 @@ class SmallModelInference:
         self.max_new_tokens = max_new_tokens
         self.inference_params: dict = dict(inference_params or {})
         self.backend = backend
-        self.checkpoint_dir = checkpoint_dir
         self.model, self.tokenizer = _load(
-            model_name, device, dtype, backend=backend, checkpoint_dir=checkpoint_dir
+            model_name, device, dtype, backend=backend
         )
         self.last_generate_ms: Optional[float] = None
         self.last_generated_tokens: Optional[int] = None

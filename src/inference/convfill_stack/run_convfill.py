@@ -20,7 +20,6 @@ class ConvFillConfig:
             config = json.load(f)
 
         self.frontend_model_config_path = config["frontend_model_config_path"]
-        self.frontend_checkpoint_dir = config["frontend_checkpoint_dir"]
         self.backend_prompt_template_file = config["backend_prompt_template_file"]
         self.backend_model_name = config["backend_model_name"]
         self.backend_model_mode = config["backend_model_mode"]
@@ -91,7 +90,6 @@ class ConvFillSystem:
         print("[LOG] Setting up ConvFill Frontend\n")
         self.convfill_frontend = ConvFillFrontend(
             model_config_path=self.convfill_config.frontend_model_config_path,
-            checkpoint_dir=self.convfill_config.frontend_checkpoint_dir,
             dialogue_state_manager=self.dialogue_state_manager,
             device=self.convfill_config.frontend_device,
             dtype=self.convfill_config.frontend_dtype)

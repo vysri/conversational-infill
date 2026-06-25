@@ -41,10 +41,8 @@ def _resolve_dtype(device: str):
 
 
 class ConvFillFrontend:
-    def __init__(self, model_config_path, checkpoint_dir, dialogue_state_manager, device: str = "cpu", dtype: str | None = None):
+    def __init__(self, model_config_path, dialogue_state_manager, device: str = "cpu", dtype: str | None = None):
         self.model_config_path = model_config_path
-        self.checkpoint_dir = checkpoint_dir
-        self.run_name = self.extract_run_name()
         self.device = device
         self.dtype = dtype
 
@@ -60,7 +58,6 @@ class ConvFillFrontend:
 
         # backend defaults to mlx
         self.backend = self.model_config.get("backend", "mlx")
-        self.checkpoint_suffix = self.model_config.get("checkpoint_suffix", "_mlx_q8")
 
         self.model, self.tokenizer = self.load_model()
         self.turn_state_manager = TurnStateManager(boundary_tokens=self.boundary_tokens)
@@ -73,20 +70,17 @@ class ConvFillFrontend:
     def get_boundary_tokens(self):
         return self.boundary_tokens
 
-    def extract_run_name(self):
-        path = Path(self.model_config_path)
-        name = path.stem
-        prefix = "convfill_"
-        if name.startswith(prefix):
-            extracted = name[len(prefix):]
-            print("[MODEL SETUP] EXTRACTED RUN NAME:", extracted, flush=True)
-            return extracted
-            print("[MODEL SETUP] WARNING: RUN NAME DOES NOT START WITH EXPECTED PREFIX:", prefix, flush=True)
-        return name
-
     def load_model(self):
-        suffix = self.checkpoint_suffix if self.backend == "mlx" else ""
-        model_checkpoint_path = f"{self.checkpoint_dir}/{self.run_name}{suffix}"
+        if self.backend == "mlx":
+            model_checkpoint_path = self.model_config.get("convfill_hf_mlx_pretrained_path")
+        else:
+            model_checkpoint_path = self.model_config.get("convfill_hf_pretrained_path")
+
+        if not model_checkpoint_path:
+            field_name = "convfill_hf_mlx_pretrained_path" if self.backend == "mlx" else "convfill_hf_pretrained_path"
+            raise ValueError(
+                f"{self.model_config_path} is missing {field_name}"
+            )
 
         config_dtype = self.model_config.get("torch_dtype")
         if self.dtype is not None:
