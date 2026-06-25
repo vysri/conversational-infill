@@ -27,17 +27,12 @@ _MODEL_CACHE: dict = {}
 _MODEL_CACHE_LOCK = threading.Lock()
 
 _DTYPE_NAMES = {
-    "float16": torch.float16,
-    "bfloat16": torch.bfloat16,
-    "float32": torch.float32,
+    "bf16": torch.bfloat16,
 }
 
 
 def _resolve_dtype(device: str):
-    # default to bfloat16 on accelerators
-    if device in ("cuda", "mps"):
-        return torch.bfloat16
-    return torch.float32
+    return torch.bfloat16
 
 
 class ConvFillFrontend:

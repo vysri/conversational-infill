@@ -35,21 +35,12 @@ SYSTEM_PROMPT = (
 
 
 _DTYPE_NAMES = {
-    "float16": torch.float16,
-    "bfloat16": torch.bfloat16,
-    "float32": torch.float32,
+    "bf16": torch.bfloat16,
 }
 
 
 def _resolve_dtype(device: str):
-    # BF16 default on GPU: FP16 overflows on Gemma 270M activations on MPS and
-    # collapses output to <pad>. BF16 keeps FP32's exponent range so it works
-    # across Gemma and Qwen alike.
-    if device == "cuda":
-        return torch.bfloat16
-    if device == "mps":
-        return torch.bfloat16
-    return torch.float32
+    return torch.bfloat16
 
 
 def _resolve_torch_dtype(device: str, dtype: Optional[str]):

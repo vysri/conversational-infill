@@ -667,7 +667,7 @@ export default function App() {
                 {precision === null && <option value="">—</option>}
                 {availablePrecisions.map((p) => (
                   <option key={p} value={p}>
-                    {p === "int8" ? "int8 (MLX)" : p}
+                    {p === "int8" ? "int8 (MLX)" : p === "bf16" ? "bf16 (HuggingFace)" : p}
                   </option>
                 ))}
               </select>

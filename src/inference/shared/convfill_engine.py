@@ -121,9 +121,7 @@ def _device_default_precision(device: str) -> str:
 
 
 def _device_default_hf_precision(device: str) -> str:
-    if device in ("cuda", "mps"):
-        return "bfloat16"
-    return "float32"
+    return "bf16"
 
 
 def compute_device_capabilities() -> dict:
@@ -245,7 +243,7 @@ class ConvFillEngine:
 
         self.active_frontend_precision: str = _device_default_precision(self.device_settings["frontend"])
 
-        self.available_frontend_precisions: list = ["int8", "bfloat16", "float16", "float32"]
+        self.available_frontend_precisions: list = ["bf16", "int8"]
 
         hf_dtype_fallback = (
             self.active_frontend_precision
