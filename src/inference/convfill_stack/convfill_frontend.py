@@ -8,7 +8,6 @@ from pathlib import Path
 from src.inference.shared.turn_state_manager import TurnStateManager
 from src.inference.shared.dialogue_state_manager import DialogueStateManager
 import re
-import mlx_lm
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?:(?<=[.!?])|(?<=[.!?][\"')\]]))\s+")
 
@@ -229,6 +228,8 @@ class ConvFillFrontend:
                 raise gen_error[0]
 
     def _iter_mlx_chunks(self, prompt):
+        import mlx_lm
+
         n = 0
         for resp in mlx_lm.stream_generate(
             self.model, self.tokenizer, prompt=prompt, max_tokens=256

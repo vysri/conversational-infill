@@ -16,18 +16,53 @@ This repository contains the training and inference code for ConvFill a dual mod
 
 ## Quick Setup
 
-Run the following commands from the root of the repository to get the necessary packages set up.
+Run the following commands from the root of the repository to get the necessary packages set up. ConvFill expects Python 3.11. Use either a Conda environment or a virtual environment.
 
 ```bash
-pip install -r requirements.txt
-pip install -e .
-cp .env.example .env
-source .env
+# Option A: create and activate a Conda environment
+conda create -n convfill python=3.11
+conda activate convfill
+```
+OR
+```bash
+# Option B: create and activate a virtual environment
+python3.11 -m venv .venv
+source .venv/bin/activate
+```
+After creating/activating your environment, run:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 
-Fill in API keys in `.env` file for whichever providers you'll use (Claude, OpenAI, or Gemini).
+Make sure you have set API keys in your environment for whichever providers you'll use (Claude, OpenAI, or Gemini).
+We recommend you use a secure method, such as those outlined in OpenAI's
+[API key safety guidance](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
-In the following documentation, we use "frontend" to refer to the ConvFill ```Talker``` and "backend" to refer to the ConvFill ```Reasoner```.
+To manually set the API key environment variables temporarily for your current shell session, see below:
+
+```bash
+export ANTHROPIC_API_KEY="your-anthropic-api-key"
+export OPENAI_API_KEY="your-openai-api-key"
+export GEMINI_API_KEY="your-gemini-api-key"
+```
+
+The web demo frontend expects Node.js 24. If you use `nvm`, you can run the following from the repository root:
+
+```bash
+nvm install
+nvm use
+```
+If you don't have NVM/Node.js installed, follow the [NVM download guide](https://www.nvmnode.com/guide/download.html),
+then return here and run the `nvm install` / `nvm use` commands above. If you have a different Node setup, make sure
+`node -v` shows `v24.x`, then install the npm dependencies directly:
+
+```bash
+cd web_demo/frontend
+npm ci
+cd ../..
+```
 
 # Repository Walkthrough
 
@@ -158,7 +193,7 @@ The default `normal` task mode needs no extra setup. The `rag` and `mcp` modes e
 
 RAG mode retrieves context from a vector index before each backend response. At query time it embeds the user's turn with OpenAI's `text-embedding-3-large`, so it **requires an OpenAI API key** — even if your backend model is Claude or Gemini.
 
-1. Set `OPENAI_API_KEY` in `.env` (see [Setup Code](#setup-code)).
+1. Export `OPENAI_API_KEY` in your environment (see [Quick Setup](#quick-setup)).
 2. The retrieval assets are already committed — `src/inference/rag/uw_phd.index` (FAISS index) and `src/inference/rag/uw_chunks.json` (chunk store) — and the local reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) downloads automatically on first use. You can select RAG mode in the web demo UI.
 
 **Using your own corpus:**
@@ -200,14 +235,14 @@ To add other MCP servers, download them and add an entry to the `mcp_servers` li
 ## Web Demo
 
 ```bash
-bash web_demo/run_web_demo.sh
+bash scripts/run_web_demo.sh
 ```
 
 This launches:
 - FastAPI backend: `http://127.0.0.1:8000`
 - Vite frontend: `http://127.0.0.1:5173` (open this in your browser)
 
-On first run, installs frontend dependencies (`npm install`). Requires `ffmpeg` on your `PATH` for in-browser speech transcription.
+On first run, installs frontend dependencies (`npm ci`). Requires `ffmpeg` on your `PATH` for in-browser speech transcription.
 
 ### TTS Configuration
 

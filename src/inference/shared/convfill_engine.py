@@ -18,7 +18,7 @@ from typing import Optional
 
 from strip_markdown import strip_markdown
 
-from src.utils.api_keys import get_api_key, has_api_key
+from src.utils.api_keys import get_api_key, get_api_key_env_var, has_api_key
 from src.inference.convfill_stack.run_convfill import ConvFillConfig, ConvFillSystem
 from src.inference.shared.dialogue_state_manager import DialogueStateManager
 from src.inference.shared.dialogue_state_manager_standalone import DialogueStateManagerStandalone
@@ -575,7 +575,10 @@ class ConvFillEngine:
         if name not in self.backend_models[provider]:
             raise EngineError(f"Unknown backend model: {provider}/{name}")
         if not has_api_key(provider):
-            raise EngineError(f"Missing API key for {provider}; add it to the .env file at the repo root")
+            env_var = get_api_key_env_var(provider)
+            raise EngineError(
+                f'Missing API key for {provider}; set it with `export {env_var}="..."`'
+            )
         if provider == self.active_backend_provider and name == self.active_backend_model:
             return
         self.reset()

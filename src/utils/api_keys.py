@@ -1,16 +1,10 @@
 """Single source of truth for backend LLM API keys.
 
-Keys live in a `.env` file at the repo root (gitignored) and are read via
-environment variables — never from on-disk `*_API_KEY.txt` files. Importing this
-module loads the `.env` once; callers use `get_api_key` / `has_api_key`.
+Keys must be exported into the process environment. Callers use
+`get_api_key` / `has_api_key`.
 """
 
 import os
-
-from dotenv import load_dotenv
-
-_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-load_dotenv(os.path.join(_REPO_ROOT, ".env"))  # idempotent; safe to import many times
 
 _PROVIDER_ENV = {
     "claude": "ANTHROPIC_API_KEY",
@@ -21,13 +15,19 @@ _PROVIDER_ENV = {
 
 def get_api_key(provider: str) -> str:
     """Return the API key for `provider`, raising if it is unset."""
+    var = get_api_key_env_var(provider)
+    key = os.getenv(var)
+    if not key:
+        raise RuntimeError(f'Missing {var}; set it with `export {var}="..."`')
+    return key
+
+
+def get_api_key_env_var(provider: str) -> str:
+    """Return the environment variable name for `provider`."""
     var = _PROVIDER_ENV.get(provider)
     if var is None:
         raise ValueError(f"Unknown provider: {provider}")
-    key = os.getenv(var)
-    if not key:
-        raise RuntimeError(f"Missing {var}; add it to the .env file at the repo root")
-    return key
+    return var
 
 
 def has_api_key(provider: str) -> bool:

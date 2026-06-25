@@ -8,6 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=10"
+  },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
