@@ -5,6 +5,7 @@ __pycache__
 smollm-streaming/
 */.env
 .DS_Store
+.venv
 
 
 */.DS_Store
