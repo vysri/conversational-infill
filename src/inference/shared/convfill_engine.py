@@ -29,9 +29,7 @@ _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..",
 _INFERENCE_DIR = os.path.join(_REPO_ROOT, "src", "inference")
 
 
-NORMAL_CONFIG_PATH = os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_config.json")
-RAG_CONFIG_PATH = os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_config_rag.json")
-MCP_CONFIG_PATH = os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_config_mcp.json")
+OVERALL_CONFIG_PATH = os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_overall_config.json")
 
 CONFIGS_DIR = os.path.join(_REPO_ROOT, "configs", "convfill_frontend_configs")
 import re as _re
@@ -231,9 +229,9 @@ class ConvFillEngine:
         self.standalone_dsm = DialogueStateManagerStandalone()
 
         self._configs = {
-            "normal": ConvFillConfig(NORMAL_CONFIG_PATH),
-            "rag": ConvFillConfig(RAG_CONFIG_PATH),
-            "mcp": ConvFillConfig(MCP_CONFIG_PATH),
+            "normal": ConvFillConfig(OVERALL_CONFIG_PATH, mode="normal"),
+            "rag": ConvFillConfig(OVERALL_CONFIG_PATH, mode="rag"),
+            "mcp": ConvFillConfig(OVERALL_CONFIG_PATH, mode="mcp"),
         }
         self._systems: dict = {}
 
@@ -345,8 +343,9 @@ class ConvFillEngine:
         if self._small_rag is not None:
             return self._small_rag
         from src.inference.rag.retreive import RunRAG
-        with open(RAG_CONFIG_PATH, "r") as f:
-            rag_cfg = json.load(f).get("task_specific_config", {})
+        with open(OVERALL_CONFIG_PATH, "r") as f:
+            overall_config = json.load(f)
+            rag_cfg = overall_config["modes"]["rag"].get("task_specific_config", {})
         self._small_rag = RunRAG(
             index_path=rag_cfg["rag_index"],
             chunks_path=rag_cfg["rag_chunks"],

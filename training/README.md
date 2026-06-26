@@ -157,7 +157,7 @@ Multi-GPU training is handled automatically through Lightning's DDP when multipl
 
 ### Training Output
 
-Training checkpoints and logs are saved to the `--output_dir` directory specified during training. After training completes, update your inference configs (in `configs/demo_mode/`) to reference your trained model's weight paths so the web demo can load your model for inference.
+Training checkpoints and logs are saved to the `--output_dir` directory specified during training. After training completes, update your inference config (in `configs/demo_mode/convfill_overall_config.json`) to reference your trained model's weight paths so the web demo can load your model for inference.
 
 ## Training Summary
 
@@ -165,7 +165,7 @@ Training checkpoints and logs are saved to the `--output_dir` directory specifie
 2. **Preprocess data** - Run `dataset_gen/dataset_preprocess.py` (or `scripts/data_preprocess.sh`) to convert raw data into training format
 3. **Select/edit config** - Choose a base model from `configs/convfill_frontend_configs/` or create your own
 4. **Run training** - Execute `src/training/finetune_convfill.py` with your config, run name, and output directory
-5. **Use trained weights** - Update inference configs (in `configs/demo_mode/`) to reference your trained model's weight paths
+5. **Use trained weights** - Update the inference config (in `configs/demo_mode/convfill_overall_config.json`) to reference your trained model's weight paths
 
 ## Adding Custom Metrics
 

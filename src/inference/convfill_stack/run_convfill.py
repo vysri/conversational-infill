@@ -15,9 +15,13 @@ from strip_markdown import strip_markdown
 from src.utils.api_keys import get_api_key
 
 class ConvFillConfig:
-    def __init__(self, config_path):
+    def __init__(self, config_path, mode=None):
         with open(config_path, "r") as f:
             config = json.load(f)
+
+        if "modes" in config:
+            mode_config = config["modes"][mode]
+            config = {**config, **mode_config, "mode": mode}
 
         self.frontend_model_config_path = config["frontend_model_config_path"]
         self.backend_prompt_template_file = config["backend_prompt_template_file"]

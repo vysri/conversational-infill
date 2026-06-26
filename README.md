@@ -92,14 +92,14 @@ Before providing any of the details of the code, we first will walk through the 
 ## Configs
 
 * `configs/convfill_frontend_configs` — frontend (local) model training/inference configs, one per model size (see the table below).
-* `configs/demo_mode` — runtime configs for the demo, one per task mode: `convfill_config.json` (normal), `convfill_config_rag.json` (rag), `convfill_config_mcp.json` (mcp). Each selects the frontend model, backend model, and prompt template.
+* `configs/demo_mode` — unified runtime config for the demo: `convfill_overall_config.json`. Selects the frontend model, backend model, and prompt template for all task modes (normal, rag, mcp). Top-level fields apply to all modes; mode-specific fields (backend prompt, RAG/MCP config) are nested under `modes.<name>`.
 * `configs/backend_model_configs` — available cloud model names per provider (`claude/`, `openai/`, `gemini/`).
 * `configs/convfill_backend_prompts` — backend prompt templates for the ConvFill stack (the `*_conv.txt` files).
 * `configs/backend_only_prompts` — prompt templates for backend-only single-model runs.
 
 ### Frontend (local) models
 
-These are the configs in `configs/convfill_frontend_configs`, each pointing at a HuggingFace model. Pass one to `--config` when training, or reference it from a `configs/demo_mode/*.json` for inference.
+These are the configs in `configs/convfill_frontend_configs`, each pointing at a HuggingFace model. Pass one to `--config` when training, or reference it from `configs/demo_mode/convfill_overall_config.json` under the top-level `frontend_model_config_path` for inference.
 
 | Config | HuggingFace model |
 |--------|-------------------|
@@ -142,7 +142,7 @@ Both precision options appear in the "Frontend precision" dropdown in the web de
 
 ### Backend (API) models
 
-Set the backend model via `backend_model_name` / `backend_model_mode` in a `configs/demo_mode/*.json`. Available names per provider (`configs/backend_model_configs/<provider>/model_names.json`):
+Set the backend model via `backend_model_name` / `backend_model_mode` in `configs/demo_mode/convfill_overall_config.json` (top-level fields). Available names per provider (`configs/backend_model_configs/<provider>/model_names.json`):
 
 | Provider (`backend_model_mode`) | Model names |
 |---------------------------------|-------------|
@@ -230,7 +230,7 @@ RAG mode retrieves context from a vector index before each backend response. At 
    - Index: a FAISS flat index of embeddings (created via `faiss.IndexFlatL2(dim)` or similar)
    - Chunks: a JSON file mapping chunk IDs to text, e.g. `{"0": "chunk text", "1": "more text", ...}`
 
-2. Update `configs/demo_mode/convfill_config_rag.json` under `task_specific_config`:
+2. Update `configs/demo_mode/convfill_overall_config.json` under `modes.rag.task_specific_config`:
    ```json
    "rag_index": "path/to/your.index",
    "rag_chunks": "path/to/your_chunks.json"
@@ -240,7 +240,7 @@ The embedding model (`text-embedding-3-large`) and reranker (`cross-encoder/ms-m
 
 ## MCP mode
 
-MCP mode lets the backend model call tools exposed by external [Model Context Protocol](https://modelcontextprotocol.io) servers. Those servers are **separate external repos** that you download and run yourself, then wire into `configs/demo_mode/convfill_config_mcp.json`.
+MCP mode lets the backend model call tools exposed by external [Model Context Protocol](https://modelcontextprotocol.io) servers. Those servers are **separate external repos** that you download and run yourself, then wire into `configs/demo_mode/convfill_overall_config.json` under `modes.mcp.task_specific_config`.
 
 The default config wires up the [`mail-mcp`](https://github.com/tecnologicachile/mail-mcp) email server (**v0.4.5**, vendored under `external/mail-mcp`). We ran it via Docker in our examples:
 
@@ -274,7 +274,7 @@ On first run, installs frontend dependencies (`npm ci`). Requires `ffmpeg` on yo
 
 ### TTS Configuration
 
-The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/*.json`:
+The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/convfill_overall_config.json` (top-level, applies to all task modes):
 
 **Available TTS engines:**
 
@@ -286,12 +286,9 @@ The web demo uses text-to-speech (TTS) to synthesize audio responses. You can ch
 **To switch TTS engines:**
 The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** of a valid ONNX model file. Download Piper voices from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/), which includes voices in multiple languages and styles.
 
-1. Open the config file for the task mode you're running:
-   - `configs/demo_mode/convfill_config.json` (normal mode)
-   - `configs/demo_mode/convfill_config_rag.json` (RAG mode)
-   - `configs/demo_mode/convfill_config_mcp.json` (MCP mode)
+1. Open `configs/demo_mode/convfill_overall_config.json` (the unified config for all task modes).
 
-2. Edit `tts_mode` to `"say"` or `"piper"`:
+2. Edit the top-level `tts_mode` to `"say"` or `"piper"`:
    ```json
    "tts_mode": "piper",
    "tts_model_path": "/path/to/model.onnx"
