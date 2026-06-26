@@ -36,34 +36,6 @@ python -m pip install -r requirements.txt
 python -m pip install -e .
 ```
 
-Make sure you have set API keys in your environment for whichever providers you'll use (Claude, OpenAI, or Gemini).
-We recommend you use a secure method, such as those outlined in OpenAI's
-[API key safety guidance](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
-
-To manually set the API key environment variables temporarily for your current shell session, see below:
-
-```bash
-export ANTHROPIC_API_KEY="your-anthropic-api-key"
-export OPENAI_API_KEY="your-openai-api-key"
-export GEMINI_API_KEY="your-gemini-api-key"
-```
-
-The web demo frontend expects Node.js 24. If you use `nvm`, you can run the following from the repository root:
-
-```bash
-nvm install
-nvm use
-```
-If you don't have NVM/Node.js installed, follow the [NVM download guide](https://www.nvmnode.com/guide/download.html),
-then return here and run the `nvm install` / `nvm use` commands above. If you have a different Node setup, make sure
-`node -v` shows `v24.x`, then install the npm dependencies directly:
-
-```bash
-cd web_demo/frontend
-npm ci
-cd ../..
-```
-
 # Repository Contents
 
 Before providing any of the details of the code, we first will walk through the structure of the training and inference code.
@@ -213,68 +185,47 @@ bash scripts/train_convfill.sh
 
 Multi-GPU training is handled automatically through Lightning's DDP when multiple GPUs are available, they will be auto-detected in the current configuration; CPU vs GPU is set by the `"platform"` field in the config.
 
-# Task Mode Setup (RAG & MCP)
+# Live Demo Instructions
 
-The default `normal` task mode needs no extra setup. The `rag` and `mcp` modes each require a one-time setup before you can run them in the web demo.
+## Dependencies
+This web demo requires external APIs for `Reasoner` models and Node.js for the web frontend in addition to the Python environment described above. The final step for installing RAG and MCP features is optional.
 
-## RAG mode
+### LLM API Keys
+Make sure you have set API keys in your environment for whichever providers you'll use (Claude, OpenAI, or Gemini).
+We recommend you use a secure method, such as those outlined in OpenAI's
+[API key safety guidance](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
-RAG mode retrieves context from a vector index before each backend response. At query time it embeds the user's turn with OpenAI's `text-embedding-3-large`, so it **requires an OpenAI API key** — even if your backend model is Claude or Gemini.
-
-1. Export `OPENAI_API_KEY` in your environment (see [Quick Setup](#quick-setup)).
-2. The retrieval assets are already committed — `src/inference/rag/uw_phd.index` (FAISS index) and `src/inference/rag/uw_chunks.json` (chunk store) — and the local reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) downloads automatically on first use. You can select RAG mode in the web demo UI.
-
-**Using your own corpus:**
-
-1. Create a FAISS index and chunk store:
-   - Index: a FAISS flat index of embeddings (created via `faiss.IndexFlatL2(dim)` or similar)
-   - Chunks: a JSON file mapping chunk IDs to text, e.g. `{"0": "chunk text", "1": "more text", ...}`
-
-2. Update `configs/demo_mode/convfill_config_rag.json` under `task_specific_config`:
-   ```json
-   "rag_index": "path/to/your.index",
-   "rag_chunks": "path/to/your_chunks.json"
-   ```
-
-The embedding model (`text-embedding-3-large`) and reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) are fixed in the code, but you can change them to match your desired implementation.
-
-## MCP mode
-
-MCP mode lets the backend model call tools exposed by external [Model Context Protocol](https://modelcontextprotocol.io) servers. Those servers are **separate external repos** that you download and run yourself, then wire into `configs/demo_mode/convfill_config_mcp.json`.
-
-The default config wires up the [`mail-mcp`](https://github.com/tecnologicachile/mail-mcp) email server (**v0.4.5**, vendored under `external/mail-mcp`). We ran it via Docker in our examples:
-
-```json
-"mcp_servers": [
-  {
-    "name": "mail",
-    "transport": "stdio",
-    "command": "docker",
-    "args": ["exec", "-i", "gmail-mcp", "mail-mcp"],
-    "env": {}
-  }
-]
-```
-
-To use it, follow the setup instructions in [`mail-mcp` v0.4.5](https://github.com/tecnologicachile/mail-mcp) (pick whichever method you prefer — Docker, native binary, etc.), then update `command` and `args` in the config to match how you launch it.
-
-To add other MCP servers, download them and add an entry to the `mcp_servers` list with the appropriate `command`, `args`, and `env`. `max_tool_iterations` caps how many tool calls the backend may chain per turn. You can select MCP mode in the web demo UI.
-
-## Web Demo
+To manually set the API key environment variables temporarily for your current shell session, see below:
 
 ```bash
-bash scripts/run_web_demo.sh
+export ANTHROPIC_API_KEY="your-anthropic-api-key"
+export OPENAI_API_KEY="your-openai-api-key"
+export GEMINI_API_KEY="your-gemini-api-key"
+```
+### Node Setup
+The web demo frontend expects Node.js 24. If you use `nvm`, you can run the following from the repository root:
+
+```bash
+nvm install
+nvm use
+```
+If you don't have NVM/Node.js installed, follow the [NVM download guide](https://www.nvmnode.com/guide/download.html),
+then return here and run the `nvm install` / `nvm use` commands above. If you have a different Node setup, make sure
+`node -v` shows `v24.x`. 
+
+Then install the npm dependencies directly:
+
+```bash
+cd web_demo/frontend
+npm ci
+cd ../..
 ```
 
-This launches:
-- FastAPI backend: `http://127.0.0.1:8000`
-- Vite frontend: `http://127.0.0.1:5173` (open this in your browser)
-
-On first run, installs frontend dependencies (`npm ci`). Requires `ffmpeg` on your `PATH` for in-browser speech transcription.
+### FFMPEG
+FFMPEG is required to handle audio files for speech transcription. Make sure you have it installed and added to your path. Installation instructions can be found here: [FFMPEG download and installation](https://www.ffmpeg.org/download.html).
 
 ### TTS Configuration
-
-The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/*.json`:
+This step can be skipped if running MacOS. The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/*.json`: 
 
 **Available TTS engines:**
 
@@ -298,6 +249,66 @@ The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform 
    ```
 
 3. Restart the web demo for the change to take effect.
+
+## Starting the Demo
+
+You should now be able to launch the web demo by running the following from the project root: 
+
+```bash
+bash scripts/run_web_demo.sh
+```
+
+This launches:
+- FastAPI backend: `http://127.0.0.1:8000`
+- Vite frontend: `http://127.0.0.1:5173` (open this in your browser)
+
+## (Optional) Rag & MCP Setup
+
+The default `normal` task mode needs no extra setup. The `rag` and `mcp` modes each require a one-time setup before you can run them in the web demo.
+
+### RAG mode
+
+RAG mode retrieves context from a vector index before each backend response. At query time it embeds the user's turn with OpenAI's `text-embedding-3-large`, so it **requires an OpenAI API key** — even if your backend model is Claude or Gemini.
+
+1. Export `OPENAI_API_KEY` in your environment (see [Quick Setup](#quick-setup)).
+2. The retrieval assets are already committed — `src/inference/rag/uw_phd.index` (FAISS index) and `src/inference/rag/uw_chunks.json` (chunk store) — and the local reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) downloads automatically on first use. You can select RAG mode in the web demo UI.
+
+**Using your own corpus:**
+
+1. Create a FAISS index and chunk store:
+   - Index: a FAISS flat index of embeddings (created via `faiss.IndexFlatL2(dim)` or similar)
+   - Chunks: a JSON file mapping chunk IDs to text, e.g. `{"0": "chunk text", "1": "more text", ...}`
+
+2. Update `configs/demo_mode/convfill_config_rag.json` under `task_specific_config`:
+   ```json
+   "rag_index": "path/to/your.index",
+   "rag_chunks": "path/to/your_chunks.json"
+   ```
+
+The embedding model (`text-embedding-3-large`) and reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) are fixed in the code, but you can change them to match your desired implementation.
+
+### MCP mode
+
+MCP mode lets the backend model call tools exposed by external [Model Context Protocol](https://modelcontextprotocol.io) servers. Those servers are **separate external repos** that you download and run yourself, then wire into `configs/demo_mode/convfill_config_mcp.json`.
+
+The default config wires up the [`mail-mcp`](https://github.com/tecnologicachile/mail-mcp) email server (**v0.4.5**, vendored under `external/mail-mcp`). We ran it via Docker in our examples:
+
+```json
+"mcp_servers": [
+  {
+    "name": "mail",
+    "transport": "stdio",
+    "command": "docker",
+    "args": ["exec", "-i", "gmail-mcp", "mail-mcp"],
+    "env": {}
+  }
+]
+```
+
+To use it, follow the setup instructions in [`mail-mcp` v0.4.5](https://github.com/tecnologicachile/mail-mcp) (pick whichever method you prefer — Docker, native binary, etc.), then update `command` and `args` in the config to match how you launch it.
+
+To add other MCP servers, download them and add an entry to the `mcp_servers` list with the appropriate `command`, `args`, and `env`. `max_tool_iterations` caps how many tool calls the backend may chain per turn. You can select MCP mode in the web demo UI.
+
 
 ## Citation 
 
