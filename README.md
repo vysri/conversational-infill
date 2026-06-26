@@ -264,7 +264,7 @@ This launches:
 
 ## (Optional) Rag & MCP Setup
 
-The default `normal` task mode needs no extra setup. The `rag` and `mcp` modes each require a one-time setup before you can run them in the web demo.
+The default `normal` task mode needs no extra setup. The `rag` and `mcp` modes each require a one-time setup before you can run them in the web demo. 
 
 ### RAG mode
 
@@ -272,20 +272,6 @@ RAG mode retrieves context from a vector index before each backend response. At 
 
 1. Export `OPENAI_API_KEY` in your environment (see [Quick Setup](#quick-setup)).
 2. The retrieval assets are already committed — `src/inference/rag/uw_phd.index` (FAISS index) and `src/inference/rag/uw_chunks.json` (chunk store) — and the local reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) downloads automatically on first use. You can select RAG mode in the web demo UI.
-
-**Using your own corpus:**
-
-1. Create a FAISS index and chunk store:
-   - Index: a FAISS flat index of embeddings (created via `faiss.IndexFlatL2(dim)` or similar)
-   - Chunks: a JSON file mapping chunk IDs to text, e.g. `{"0": "chunk text", "1": "more text", ...}`
-
-2. Update `configs/demo_mode/convfill_overall_config.json` under `modes.rag.task_specific_config`:
-   ```json
-   "rag_index": "path/to/your.index",
-   "rag_chunks": "path/to/your_chunks.json"
-   ```
-
-The embedding model (`text-embedding-3-large`) and reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) are fixed in the code, but you can change them to match your desired implementation.
 
 ### MCP mode
 
@@ -308,42 +294,6 @@ The default config wires up the [`mail-mcp`](https://github.com/tecnologicachile
 To use it, follow the setup instructions in [`mail-mcp` v0.4.5](https://github.com/tecnologicachile/mail-mcp) (pick whichever method you prefer — Docker, native binary, etc.), then update `command` and `args` in the config to match how you launch it.
 
 To add other MCP servers, download them and add an entry to the `mcp_servers` list with the appropriate `command`, `args`, and `env`. `max_tool_iterations` caps how many tool calls the backend may chain per turn. You can select MCP mode in the web demo UI.
-
-## Web Demo
-
-```bash
-bash scripts/run_web_demo.sh
-```
-
-This launches:
-- FastAPI backend: `http://127.0.0.1:8000`
-- Vite frontend: `http://127.0.0.1:5173` (open this in your browser)
-
-On first run, installs frontend dependencies (`npm ci`). Requires `ffmpeg` on your `PATH` for in-browser speech transcription.
-
-### TTS Configuration
-
-The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/convfill_overall_config.json` (top-level, applies to all task modes):
-
-**Available TTS engines:**
-
-| Engine | `tts_mode` | `tts_model_path` | Notes |
-|--------|-----------|------------------|-------|
-| macOS `say` | `"say"` | Ignored | Uses native macOS voice synthesis. Audio plays on server; no PCM streamed to browser. Requires macOS. |
-| Piper | `"piper"` | **Required (absolute path)** | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
-
-**To switch TTS engines:**
-The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** of a valid ONNX model file. Download Piper voices from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/), which includes voices in multiple languages and styles.
-
-1. Open `configs/demo_mode/convfill_overall_config.json` (the unified config for all task modes).
-
-2. Edit the top-level `tts_mode` to `"say"` or `"piper"`:
-   ```json
-   "tts_mode": "piper",
-   "tts_model_path": "/path/to/model.onnx"
-   ```
-
-3. Restart the web demo for the change to take effect.
 
 ## Citation 
 
