@@ -10,8 +10,7 @@ import os
 
 class ConvFillBackend:
     def __init__(self, dialogue_state_manager, prompt_template_path, model_backend, mode="normal",
-                 task_specific_config=None, on_rag_context=None, on_mcp_context=None,
-                 reranker_device: str = "cpu"):
+                 task_specific_config=None, on_rag_context=None, on_mcp_context=None):
         self.dialogue_state_manager = dialogue_state_manager
         self.model_backend = model_backend
         # Mode can be one of "normal", "rag", or "mcp"
@@ -27,7 +26,7 @@ class ConvFillBackend:
             self.reranker_model = task_specific_config["reranker_model"]
             self.embedding_model = task_specific_config["embedding_model"]
 
-            self.retriever = RunRAG(self.rag_index, self.rag_chunks, embedding_model=self.embedding_model, reranker_model=self.reranker_model, device=reranker_device)
+            self.retriever = RunRAG(self.rag_index, self.rag_chunks, embedding_model=self.embedding_model, reranker_model=self.reranker_model)
         elif self.mode == "mcp":
             assert task_specific_config is not None, "task_specific_config must be provided for MCP mode"
             server_specs = [MCPServerSpec.from_dict(d) for d in task_specific_config["mcp_servers"]]

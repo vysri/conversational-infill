@@ -14,7 +14,6 @@ class RunRAG:
         chunks_path,
         embedding_model="text-embedding-3-large",
         reranker_model="cross-encoder/ms-marco-MiniLM-L-6-v2",
-        device="cpu",
     ):
         """
         Initialize RAG system:
@@ -45,8 +44,8 @@ class RunRAG:
         # -----------------------------
         self.embedding_model = embedding_model
 
-        self.reranker = CrossEncoder(reranker_model, device=device)
-        print(f"[RAG] reranker on device: {device}", flush=True)
+        self.reranker = CrossEncoder(reranker_model, device="cpu")
+        print("[RAG] reranker on device: cpu", flush=True)
 
     # --------------------------------------------------
     # EMBEDDING

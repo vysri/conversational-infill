@@ -135,13 +135,11 @@ def compute_device_capabilities() -> dict:
 
     capabilities = {
         "frontend": torch_devices(),
-        "reranker": torch_devices(),
         "tts": onnx_devices(),
         "whisper": onnx_devices(),
     }
     defaults = {
         "frontend": "mps" if mps else "cpu",
-        "reranker": "mps" if mps else "cpu",
         "tts": "cuda" if cuda else "cpu",
         "whisper": "cuda" if cuda else "cpu",
     }
@@ -246,7 +244,6 @@ class ConvFillEngine:
 
         for cfg in self._configs.values():
             cfg.frontend_device = self.device_settings["frontend"]
-            cfg.reranker_device = self.device_settings["reranker"]
             cfg.frontend_dtype = "bf16"
 
         self.frontend_models: list = _discover_frontend_models()
@@ -352,7 +349,6 @@ class ConvFillEngine:
             chunks_path=rag_cfg["rag_chunks"],
             embedding_model=rag_cfg.get("embedding_model", "text-embedding-3-large"),
             reranker_model=rag_cfg.get("reranker_model", "cross-encoder/ms-marco-MiniLM-L-6-v2"),
-            device=self.device_settings["reranker"],
         )
         return self._small_rag
 
@@ -609,10 +605,10 @@ class ConvFillEngine:
             self._build_small_inference()
 
     def set_device(self, component: str, device: str) -> None:
-        """Record a device choice and, for the two PyTorch components
-        (frontend / reranker), rebuild affected state. TTS/Whisper are
-        transport-side services the engine doesn't own — it only records the
-        setting so the adapter can apply it."""
+        """Record a device choice and, for the PyTorch frontend component,
+        rebuild affected state. TTS/Whisper are transport-side services the
+        engine doesn't own — it only records the setting so the adapter can
+        apply it."""
         if component not in self.device_capabilities:
             raise EngineError(f"Unknown device component: {component}")
         allowed = self.device_capabilities[component]
@@ -631,11 +627,3 @@ class ConvFillEngine:
                 self._get_system(self.active_mode)
             elif self.active_small_model:
                 self._build_small_inference()
-        elif component == "reranker":
-            self.reset()
-            for cfg in self._configs.values():
-                cfg.reranker_device = device
-            self._systems = {}
-            self._small_rag = None
-            if self.demo_mode == "convfill":
-                self._get_system(self.active_mode)
