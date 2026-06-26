@@ -8,7 +8,9 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 WEB_DEMO_DIR="$REPO_ROOT/web_demo"
 cd "$REPO_ROOT"
 
+CONFIG_PATH="${1:-configs/demo_mode/convfill_simple_config.json}"
 export PYTHONPATH="$WEB_DEMO_DIR:${PYTHONPATH:-}"
+export CONVFILL_CONFIG="$CONFIG_PATH"
 
 if ! command -v ffmpeg >/dev/null 2>&1; then
   echo "[warn] ffmpeg not found on PATH — Whisper transcription will fail. Install with: brew install ffmpeg" >&2

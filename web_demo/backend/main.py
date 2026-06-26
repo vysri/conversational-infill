@@ -22,7 +22,8 @@ app = FastAPI(title="ConvFill Web")
 
 @app.on_event("startup")
 async def _startup() -> None:
-    cfg = ConvFillConfig(os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_overall_config.json"), mode="normal")
+    config_path = os.environ.get("CONVFILL_CONFIG", os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_full_config.json"))
+    cfg = ConvFillConfig(config_path, mode="normal")
     tts_configure(cfg.tts_mode, cfg.tts_model_path)
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, tts_warmup)
@@ -91,6 +92,11 @@ async def ws_endpoint(ws: WebSocket) -> None:
             "providers": session.backend_models,
             "active_provider": session.active_backend_provider,
             "active_name": session.active_backend_model,
+        }))
+        await ws.send_text(json.dumps({
+            "type": "modes",
+            "names": session.available_modes,
+            "active": session.active_mode,
         }))
         await ws.send_text(json.dumps({
             "type": "demo_mode",

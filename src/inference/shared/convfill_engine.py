@@ -29,7 +29,7 @@ _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..",
 _INFERENCE_DIR = os.path.join(_REPO_ROOT, "src", "inference")
 
 
-OVERALL_CONFIG_PATH = os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_overall_config.json")
+OVERALL_CONFIG_PATH = os.environ.get("CONVFILL_CONFIG", os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_full_config.json"))
 
 CONFIGS_DIR = os.path.join(_REPO_ROOT, "configs", "convfill_frontend_configs")
 import re as _re
@@ -222,18 +222,25 @@ class ConvFillEngine:
     def __init__(self, sink: Optional[EngineSink] = None):
         self.sink = sink or EngineSink()
 
-        self.active_mode: str = "normal"
-        self.demo_mode: str = "convfill"
-
         self.dialogue_state_manager = DialogueStateManager(num_history_turns=1)
         self.standalone_dsm = DialogueStateManagerStandalone()
 
+        # Dynamically discover modes from the config file
+        with open(OVERALL_CONFIG_PATH, "r") as f:
+            raw_config = json.load(f)
+        available_mode_names = list(raw_config.get("modes", {}).keys())
+        if not available_mode_names:
+            available_mode_names = ["normal"]
+
         self._configs = {
-            "normal": ConvFillConfig(OVERALL_CONFIG_PATH, mode="normal"),
-            "rag": ConvFillConfig(OVERALL_CONFIG_PATH, mode="rag"),
-            "mcp": ConvFillConfig(OVERALL_CONFIG_PATH, mode="mcp"),
+            mode: ConvFillConfig(OVERALL_CONFIG_PATH, mode=mode)
+            for mode in available_mode_names
         }
         self._systems: dict = {}
+
+        # Initialize active_mode to "normal" if available, else the first available mode
+        self.active_mode: str = "normal" if "normal" in self._configs else available_mode_names[0]
+        self.demo_mode: str = "convfill"
 
         caps = compute_device_capabilities()
         self.device_capabilities: dict = caps["capabilities"]
@@ -277,10 +284,14 @@ class ConvFillEngine:
         # Jinja template.
         self._large_model_inference = None
 
-        # Eagerly build the initial (normal) system so the first turn is fast.
-        self._get_system("normal")
+        # Eagerly build the initial system so the first turn is fast.
+        self._get_system(self.active_mode)
 
     # ---- system / inference builders ----
+
+    @property
+    def available_modes(self) -> list:
+        return list(self._configs.keys())
 
     def _get_system(self, mode: str):
         if mode not in self._systems:
@@ -306,7 +317,8 @@ class ConvFillEngine:
 
     @property
     def active_frontend_backend(self) -> str:
-        return _read_frontend_backend(self._configs["normal"].frontend_model_config_path)
+        frontend_config_path = self._configs[self.active_mode].frontend_model_config_path
+        return _read_frontend_backend(frontend_config_path)
 
     def _build_small_inference(self):
         params = self.small_model_params.get(self.active_small_model, {})
@@ -516,7 +528,7 @@ class ConvFillEngine:
         self.sink.on_reset()
 
     def set_mode(self, mode: str) -> None:
-        if mode not in ("normal", "rag", "mcp"):
+        if mode not in self._configs:
             raise EngineError(f"Unknown mode: {mode}")
         if mode == "mcp" and self.demo_mode == "frontend_only":
             raise EngineError("MCP is not available in frontend_only demo mode.")
@@ -538,7 +550,7 @@ class ConvFillEngine:
         self.sink.on_conversation_boundary()
 
         if demo_mode == "frontend_only" and self.active_mode == "mcp":
-            self.active_mode = "normal"
+            self.active_mode = "normal" if "normal" in self._configs else self.available_modes[0]
 
     def set_small_model(self, name: str) -> None:
         if name not in self.small_models:

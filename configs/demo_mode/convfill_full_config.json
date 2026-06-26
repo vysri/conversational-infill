@@ -5,7 +5,7 @@
     "backend_model_mode": "claude",
     "num_history_turns": 1,
     "tts_mode": "say",
-    "tts_model_path": "<path_to_your_onnx_file_here>",
+    "tts_model_path": "/Users/vysri/Desktop/conversational-filler/src/tts/en_US-ryan-high.onnx",
     "modes": {
         "normal": {
             "backend_prompt_template_file": "configs/convfill_backend_prompts/convfill_backend_template_conv.txt"

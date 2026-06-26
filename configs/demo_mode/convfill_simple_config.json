@@ -1,0 +1,29 @@
+{
+    "frontend_model_config_path": "configs/convfill_frontend_configs/convfill_qwen3_0.6B_nd.json",
+    "frontend_checkpoint_dir": "final_model_checkpoints",
+    "backend_model_name": "claude-opus-4-7",
+    "backend_model_mode": "claude",
+    "num_history_turns": 1,
+    "tts_mode": "piper",
+    "tts_model_path": "/Users/vysri/Desktop/conversational-filler/src/tts/en_US-ryan-high.onnx",
+    "modes": {
+        "normal": {
+            "backend_prompt_template_file": "configs/convfill_backend_prompts/convfill_backend_template_conv.txt"
+        },
+        "mcp": {
+            "backend_prompt_template_file": "configs/convfill_backend_prompts/convfill_backend_template_mcp_conv.txt",
+            "task_specific_config": {
+                "mcp_servers": [
+                    {
+                        "name": "mail",
+                        "transport": "stdio",
+                        "command": "docker",
+                        "args": ["exec", "-i", "gmail-mcp", "mail-mcp"],
+                        "env": {}
+                    }
+                ],
+                "max_tool_iterations": 4
+            }
+        }
+    }
+}
