@@ -238,11 +238,7 @@ This step can be skipped if running macOS. The web demo uses text-to-speech (TTS
 
 1. Download a Piper model (e.g., from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/)). You need the `.onnx` file and its corresponding `.onnx.json` config.
 
-2. Create the `src/tts/voices/` directory and place both files there:
-   ```bash
-   mkdir -p src/tts/voices
-   cp en_US-ryan-high.onnx* src/tts/voices/
-   ```
+2. Place the two files in the `src/tts/voices/` directory
 
 3. Set `tts_mode` to `"piper"` in your config:
    ```json
