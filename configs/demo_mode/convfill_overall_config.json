@@ -4,7 +4,7 @@
     "backend_model_name": "claude-opus-4-7",
     "backend_model_mode": "claude",
     "num_history_turns": 1,
-    "tts_mode": "piper",
+    "tts_mode": "say",
     "tts_model_path": "<path_to_your_onnx_file_here>",
     "modes": {
         "normal": {
