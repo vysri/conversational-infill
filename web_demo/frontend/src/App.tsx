@@ -17,7 +17,6 @@ import type {
 
 const DEVICE_COMPONENTS: { key: DeviceComponent; label: string }[] = [
   { key: "frontend", label: "HF Frontend" },
-  { key: "reranker", label: "RAG Reranker" },
 ];
 
 const MODE_LABELS: Record<string, string> = {
@@ -780,11 +779,10 @@ export default function App() {
             </select>
           </div>
         )}
-        {deviceCapabilities && activeDevices && (
+        {deviceCapabilities && activeDevices && demoMode !== "convfill" && (
           <div className="side-drawer-section">
             <div className="side-drawer-label">Devices</div>
             {DEVICE_COMPONENTS.map(({ key, label }) => {
-              if (demoMode === "convfill" && key === "frontend") return null;
               const opts = deviceCapabilities[key] ?? [];
               const isPending = pendingDevices[key] !== undefined;
               const disabled =

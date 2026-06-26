@@ -2,7 +2,7 @@ export type Mode = string;
 
 export type DemoMode = "convfill" | "frontend_only" | "backend_only";
 
-export type DeviceComponent = "frontend" | "reranker";
+export type DeviceComponent = "frontend";
 export type Device = "cpu" | "mps" | "cuda";
 
 export type DeviceCapabilities = Record<DeviceComponent, Device[]>;

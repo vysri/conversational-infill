@@ -81,7 +81,7 @@ async def ws_endpoint(ws: WebSocket) -> None:
             "active": session.active_frontend_model,
         }))
         await ws.send_text(json.dumps(session.frontend_precision_event()))
-        _UI_DEVICE_COMPONENTS = ("frontend", "reranker")
+        _UI_DEVICE_COMPONENTS = ("frontend",)
         await ws.send_text(json.dumps({
             "type": "device_capabilities",
             "capabilities": {k: session.device_capabilities[k] for k in _UI_DEVICE_COMPONENTS if k in session.device_capabilities},

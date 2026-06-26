@@ -33,7 +33,6 @@ class ConvFillConfig:
         self.task_specific_config = config.get("task_specific_config", None)
         self.mode = config["mode"]
         self.frontend_device = config.get("frontend_device", "cpu")
-        self.reranker_device = config.get("reranker_device", "cpu")
         self.frontend_dtype = config.get("frontend_dtype")
 
 class ConvFillSystem:
@@ -88,7 +87,6 @@ class ConvFillSystem:
             task_specific_config=self.convfill_config.task_specific_config,
             on_rag_context=on_rag_context,
             on_mcp_context=on_mcp_context,
-            reranker_device=self.convfill_config.reranker_device,
         )
 
         print("[LOG] Setting up ConvFill Frontend\n")
