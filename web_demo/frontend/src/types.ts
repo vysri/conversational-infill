@@ -1,4 +1,4 @@
-export type Mode = "normal" | "rag" | "mcp";
+export type Mode = string;
 
 export type DemoMode = "convfill" | "frontend_only" | "backend_only";
 
@@ -28,6 +28,7 @@ export type ServerEvent =
   | { type: "device_changed"; component: DeviceComponent; device: Device }
   | { type: "backend_models"; providers: Record<string, string[]>; active_provider: string; active_name: string }
   | { type: "backend_model_changed"; provider: string; name: string }
+  | { type: "modes"; names: string[]; active: string }
   | { type: "demo_mode"; mode: DemoMode }
   | { type: "demo_mode_changed"; demo_mode: DemoMode }
   | { type: "small_models"; names: string[]; active: string | null }

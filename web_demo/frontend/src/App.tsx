@@ -20,6 +20,12 @@ const DEVICE_COMPONENTS: { key: DeviceComponent; label: string }[] = [
   { key: "reranker", label: "RAG Reranker" },
 ];
 
+const MODE_LABELS: Record<string, string> = {
+  normal: "Normal",
+  rag: "RAG",
+  mcp: "MCP",
+};
+
 const DEMO_MODE_LABELS: Record<DemoMode, string> = {
   convfill: "ConvFill (frontend + backend)",
   frontend_only: "Frontend only",
@@ -35,6 +41,7 @@ const DEVICE_LABELS: Record<Device, string> = {
 export default function App() {
   const [mode, setMode] = useState<Mode>("normal");
   const [pendingMode, setPendingMode] = useState<Mode | null>(null);
+  const [availableModes, setAvailableModes] = useState<string[]>(["normal"]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [turns, setTurns] = useState<TurnBlock[]>([]);
   const [turnInProgress, setTurnInProgress] = useState(false);
@@ -341,6 +348,10 @@ export default function App() {
           setMode(e.mode);
           setPendingMode(null);
           break;
+        case "modes":
+          setAvailableModes(e.names);
+          setMode(e.active);
+          break;
         case "reset_ack":
           clearAllUiState();
           break;
@@ -456,7 +467,7 @@ export default function App() {
     send({ type: "user_message", text });
   };
 
-  const onModeChange = (next: Mode) => {
+  const onModeChange = (next: string) => {
     if (next === mode || pendingMode === next) return;
     setPendingMode(next);
     send({ type: "set_mode", mode: next });
@@ -559,33 +570,19 @@ export default function App() {
             {!connected ? "disconnected" : ready ? "connected" : "loading"}
           </span>
           <div className="mode-toggle">
-            <label>
-              <input
-                type="radio"
-                checked={mode === "normal"}
-                disabled={turnInProgress || !ready}
-                onChange={() => onModeChange("normal")}
-              />
-              Normal
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={mode === "rag"}
-                disabled={turnInProgress || !ready}
-                onChange={() => onModeChange("rag")}
-              />
-              RAG
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={mode === "mcp"}
-                disabled={turnInProgress || !ready || demoMode === "frontend_only"}
-                onChange={() => onModeChange("mcp")}
-              />
-              MCP
-            </label>
+            {availableModes.map((m) => (
+              <label key={m}>
+                <input
+                  type="radio"
+                  checked={mode === m}
+                  disabled={
+                    turnInProgress || !ready || (m === "mcp" && demoMode === "frontend_only")
+                  }
+                  onChange={() => onModeChange(m)}
+                />
+                {MODE_LABELS[m] ?? m}
+              </label>
+            ))}
           </div>
           <label className="bubble-toggle">
             <input

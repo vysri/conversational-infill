@@ -255,7 +255,14 @@ The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform 
 You should now be able to launch the web demo by running the following from the project root: 
 
 ```bash
-bash scripts/run_web_demo.sh
+bash scripts/run_web_demo.sh [config_path]
+```
+
+Where `config_path` is optional and defaults to `configs/demo_mode/convfill_simple_config.json`. Examples:
+
+```bash
+bash scripts/run_web_demo.sh                                            # uses default config
+bash scripts/run_web_demo.sh configs/demo_mode/convfill_full_config.json
 ```
 
 This launches:
@@ -294,6 +301,49 @@ The default config wires up the [`mail-mcp`](https://github.com/tecnologicachile
 To use it, follow the setup instructions in [`mail-mcp` v0.4.5](https://github.com/tecnologicachile/mail-mcp) (pick whichever method you prefer — Docker, native binary, etc.), then update `command` and `args` in the config to match how you launch it.
 
 To add other MCP servers, download them and add an entry to the `mcp_servers` list with the appropriate `command`, `args`, and `env`. `max_tool_iterations` caps how many tool calls the backend may chain per turn. You can select MCP mode in the web demo UI.
+
+## Web Demo
+
+```bash
+bash scripts/run_web_demo.sh [config_path]
+```
+
+Where `config_path` is optional and defaults to `configs/demo_mode/convfill_simple_config.json`. Examples:
+
+```bash
+bash scripts/run_web_demo.sh                                            # uses default config
+bash scripts/run_web_demo.sh configs/demo_mode/convfill_full_config.json
+```
+
+This launches:
+- FastAPI backend: `http://127.0.0.1:8000`
+- Vite frontend: `http://127.0.0.1:5173` (open this in your browser)
+
+On first run, installs frontend dependencies (`npm ci`). Requires `ffmpeg` on your `PATH` for in-browser speech transcription.
+
+### TTS Configuration
+
+The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/convfill_overall_config.json` (top-level, applies to all task modes):
+
+**Available TTS engines:**
+
+| Engine | `tts_mode` | `tts_model_path` | Notes |
+|--------|-----------|------------------|-------|
+| macOS `say` | `"say"` | Ignored | Uses native macOS voice synthesis. Audio plays on server; no PCM streamed to browser. Requires macOS. |
+| Piper | `"piper"` | **Required (absolute path)** | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
+
+**To switch TTS engines:**
+The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** of a valid ONNX model file. Download Piper voices from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/), which includes voices in multiple languages and styles.
+
+1. Open `configs/demo_mode/convfill_overall_config.json` (the unified config for all task modes).
+
+2. Edit the top-level `tts_mode` to `"say"` or `"piper"`:
+   ```json
+   "tts_mode": "piper",
+   "tts_model_path": "/path/to/model.onnx"
+   ```
+
+3. Restart the web demo for the change to take effect.
 
 ## Citation 
 

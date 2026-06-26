@@ -155,6 +155,10 @@ class ConvFillSession:
         return self.engine.active_mode
 
     @property
+    def available_modes(self) -> list:
+        return self.engine.available_modes
+
+    @property
     def active_frontend_model(self) -> Optional[str]:
         return self.engine.active_frontend_model
 
@@ -624,12 +628,6 @@ class ConvFillSession:
             self._pending_mode = None
 
     async def set_mode(self, mode: str) -> None:
-        if mode not in ("normal", "rag", "mcp"):
-            self._emit({"type": "error", "message": f"Unknown mode: {mode}"})
-            return
-        if mode == "mcp" and self.demo_mode == "frontend_only":
-            self._emit({"type": "error", "message": "MCP is not available in frontend_only demo mode."})
-            return
         if self.turn_in_progress:
             self._pending_mode = mode
             self._emit({"type": "error", "message": "Mode change queued until current turn completes."})
