@@ -14,10 +14,10 @@ This repository contains the training and inference code for ConvFill a dual mod
   <img src="assets/teaser.png" width="300" alt="Teaser" />
 </p>
 
-# Overview
+<!-- # Overview
+```blah blah blah link to different parts below, dataset, huggingface, etc.```
 
-
-# Repository Contents
+# Licenses & Attributions 
 ```
 @misc{srinivas2026thinkingspeakinginferencetimeknowledge,
       title={Thinking While Speaking: Inference-Time Knowledge Transfer for Responsive and Intelligent Conversational Voice Agents}, 
@@ -29,20 +29,7 @@ This repository contains the training and inference code for ConvFill a dual mod
       url={https://arxiv.org/abs/2511.07397}, 
 }
 ```
-
-#### Frontend Precision Options
-
-The web demo exposes a precision dropdown to toggle between two inference configurations:
-
-| Precision | Backend | Format | Use Case |
-|-----------|---------|--------|----------|
-| **bf16** | HuggingFace (PyTorch) | Full precision with bfloat16 | Cross-platform (CPU/CUDA/MPS) |
-| **int8** | MLX (Metal/Apple) | 8-bit quantized | macOS/Apple Silicon only; pre-quantized weights |
-
-- When you select **bf16**, the demo loads `convfill_hf_pretrained_path` weights and runs inference via HuggingFace Transformers.
-- When you select **int8**, the demo loads `convfill_hf_mlx_pretrained_path` weights and runs inference via MLX (Apple Silicon only).
-
-Both precision options appear in the "Frontend precision" dropdown in the web demo menu. The active backend (HuggingFace or MLX) is displayed next to the precision selector.
+```code licenses and stuff``` -->
 
 # Python Environment Setup
 
@@ -249,7 +236,6 @@ These are the models we have tested as ConvFill frontends, but they are not the 
 * `configs/backend_model_configs` — available cloud model names per provider (`claude/`, `openai/`, `gemini/`).
 * `configs/convfill_backend_prompts` — backend prompt templates for the ConvFill stack (the `*_conv.txt` files).
 * `configs/backend_only_prompts` — prompt templates for backend-only single-model runs.
-
 
 ### Adding New Model(s)
 
