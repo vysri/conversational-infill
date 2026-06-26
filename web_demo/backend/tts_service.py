@@ -6,6 +6,7 @@ before the full sentence is rendered. Two engines are wired up; flip
 TTS_ENGINE below to switch.
 """
 
+import glob
 import os
 import subprocess
 import threading
@@ -30,6 +31,14 @@ def configure(mode: Literal["piper", "say"], model_path: Optional[str] = None) -
             raise ValueError("tts_mode 'piper' requires tts_model_path to be set")
         if not os.path.isabs(model_path):
             raise ValueError(f"tts_model_path must be an absolute path, got: {model_path!r}")
+        if not os.path.isdir(model_path):
+            raise ValueError(f"tts_model_path must be a directory, got: {model_path!r}")
+        onnx_files = glob.glob(os.path.join(model_path, "*.onnx"))
+        if len(onnx_files) == 0:
+            raise ValueError(f"tts_model_path directory contains no .onnx files: {model_path!r}")
+        if len(onnx_files) > 1:
+            raise ValueError(f"tts_model_path directory must contain exactly one .onnx file, found {len(onnx_files)}: {onnx_files}")
+        model_path = onnx_files[0]
     _state["mode"] = mode
     _state["model_path"] = model_path
     with _voice_lock:
