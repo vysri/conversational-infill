@@ -92,13 +92,25 @@ export default function MicButton({ onTranscribed, disabled }: Props) {
     };
   }, [disabled, busy]);
 
+  const onMouseDown = () => {
+    if (disabled || busy) return;
+    start();
+  };
+
+  const onMouseUp = () => {
+    if (recordingRef.current) stop();
+  };
+
   return (
     <button
       type="button"
       className={`mic ${recording ? "recording" : ""}`}
       disabled={disabled || busy}
-      title="Hold spacebar to record"
+      title="Hold spacebar or click to record"
       aria-live="polite"
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseUp}
     >
       {busy ? "..." : recording ? "● rec" : "🎤 hold space"}
     </button>
