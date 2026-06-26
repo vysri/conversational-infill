@@ -1,6 +1,6 @@
 {
   "model_name": "google/gemma-3-270m-it",
-  "backend": "hf",
+  "backend": "mlx",
   "convfill_hf_pretrained_path": "vysri/gemma3-270m-IT-ConvFill",
   "convfill_hf_mlx_pretrained_path":"vysri/gemma3-270m-IT-ConvFill_mlx_q8",
   "dataset_path": "your dataset path here",

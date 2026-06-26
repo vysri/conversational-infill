@@ -114,12 +114,6 @@ def _torch_caps() -> tuple:
         return False, False
 
 
-def _device_default_precision(device: str) -> str:
-    return "int8"
-
-
-def _device_default_hf_precision(device: str) -> str:
-    return "bf16"
 
 
 def compute_device_capabilities() -> dict:
@@ -246,19 +240,14 @@ class ConvFillEngine:
         self.device_capabilities: dict = caps["capabilities"]
         self.device_settings: dict = dict(caps["defaults"])
 
-        self.active_frontend_precision: str = _device_default_precision(self.device_settings["frontend"])
+        self.active_frontend_precision: str = "int8"
 
-        self.available_frontend_precisions: list = ["bf16", "int8"]
+        self.available_frontend_precisions: list = ["bf16", "int8"]  # consumed by frontend_only mode only
 
-        hf_dtype_fallback = (
-            self.active_frontend_precision
-            if self.active_frontend_precision != "int8"
-            else _device_default_hf_precision(self.device_settings["frontend"])
-        )
         for cfg in self._configs.values():
             cfg.frontend_device = self.device_settings["frontend"]
             cfg.reranker_device = self.device_settings["reranker"]
-            cfg.frontend_dtype = hf_dtype_fallback
+            cfg.frontend_dtype = "bf16"
 
         self.frontend_models: list = _discover_frontend_models()
         any_path = self._configs["normal"].frontend_model_config_path
@@ -605,6 +594,8 @@ class ConvFillEngine:
         self.sink.on_conversation_boundary()
 
     def set_precision(self, precision: str) -> None:
+        if self.demo_mode == "convfill":
+            raise EngineError("Precision is not selectable in convfill mode")
         if precision not in self.available_frontend_precisions:
             raise EngineError(f"Unknown precision: {precision}")
         if precision == self.active_frontend_precision:
@@ -612,14 +603,9 @@ class ConvFillEngine:
         self.reset()
         self.active_frontend_precision = precision
 
-        if precision != "int8":
-            for cfg in self._configs.values():
-                cfg.frontend_dtype = precision
         self._systems = {}
         self._small_inference = None
-        if self.demo_mode == "convfill":
-            self._get_system(self.active_mode)
-        elif self.demo_mode == "frontend_only" and self.active_small_model:
+        if self.demo_mode == "frontend_only" and self.active_small_model:
             self._build_small_inference()
 
     def set_device(self, component: str, device: str) -> None:
@@ -639,7 +625,6 @@ class ConvFillEngine:
             self.reset()
             for cfg in self._configs.values():
                 cfg.frontend_device = device
-                cfg.frontend_dtype = self.active_frontend_precision
             self._systems = {}
             self._small_inference = None
             if self.demo_mode == "convfill":

@@ -207,13 +207,7 @@ class ConvFillSession:
         return self.engine.active_frontend_backend
 
     def frontend_precision_event(self) -> dict:
-        # Demo-mode-aware:
-        #   * convfill mode honors the convfill config's `backend` field — when
-        #     it's mlx the precision is locked to int8 (the convfill checkpoint
-        #     was pre-quantized on disk and isn't runtime-swappable).
-        #   * frontend_only loads SmallModelInference, which supports both MLX
-        #     (int8) and HF (torch dtypes), so we offer the full list.
-        if self.demo_mode == "convfill" and self.active_frontend_backend == "mlx":
+        if self.demo_mode == "convfill":
             return {
                 "type": "frontend_precision",
                 "backend": "mlx",

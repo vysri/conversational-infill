@@ -637,7 +637,7 @@ export default function App() {
             ))}
           </select>
         </div>
-        {(demoMode === "convfill" || demoMode === "frontend_only") && (
+        {demoMode === "frontend_only" && (
           <div className="side-drawer-section">
             <label className="side-drawer-label" htmlFor="frontend-precision-select">
               Frontend precision
@@ -784,6 +784,7 @@ export default function App() {
           <div className="side-drawer-section">
             <div className="side-drawer-label">Devices</div>
             {DEVICE_COMPONENTS.map(({ key, label }) => {
+              if (demoMode === "convfill" && key === "frontend") return null;
               const opts = deviceCapabilities[key] ?? [];
               const isPending = pendingDevices[key] !== undefined;
               const disabled =
@@ -822,24 +823,6 @@ export default function App() {
             })}
           </div>
         )}
-        <div className="side-drawer-section side-drawer-section-actions">
-          <button
-            type="button"
-            className="start-new-log-button"
-            disabled={!ready || turnInProgress}
-            onClick={() => {
-              if (
-                window.confirm(
-                  "Start a new log file? All future turns will be written to a new JSONL file in logs/."
-                )
-              ) {
-                send({ type: "start_new_log" });
-              }
-            }}
-          >
-            Start new log
-          </button>
-        </div>
       </aside>
       {showTiming ? (
       <div className="metrics-bar" role="status" aria-live="polite">

@@ -39,14 +39,10 @@ _DTYPE_NAMES = {
 }
 
 
-def _resolve_dtype(device: str):
-    return torch.bfloat16
-
-
 def _resolve_torch_dtype(device: str, dtype: Optional[str]):
     if dtype is not None:
         return _DTYPE_NAMES[dtype]
-    return _resolve_dtype(device)
+    return torch.bfloat16
 
 
 def _load(

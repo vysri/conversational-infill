@@ -30,10 +30,6 @@ _DTYPE_NAMES = {
 }
 
 
-def _resolve_dtype(device: str):
-    return torch.bfloat16
-
-
 class ConvFillFrontend:
     def __init__(self, model_config_path, dialogue_state_manager, device: str = "cpu", dtype: str | None = None):
         self.model_config_path = model_config_path
@@ -82,7 +78,7 @@ class ConvFillFrontend:
         elif config_dtype is not None:
             resolved_dtype = _DTYPE_NAMES[config_dtype]
         else:
-            resolved_dtype = _resolve_dtype(self.device)
+            resolved_dtype = torch.bfloat16
 
         cache_key = (
             model_checkpoint_path,
