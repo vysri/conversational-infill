@@ -22,7 +22,7 @@ app = FastAPI(title="ConvFill Web")
 
 @app.on_event("startup")
 async def _startup() -> None:
-    cfg = ConvFillConfig(os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_config.json"))
+    cfg = ConvFillConfig(os.path.join(_REPO_ROOT, "configs", "demo_mode", "convfill_overall_config.json"), mode="normal")
     tts_configure(cfg.tts_mode, cfg.tts_model_path)
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, tts_warmup)
