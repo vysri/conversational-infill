@@ -225,29 +225,31 @@ cd ../..
 FFMPEG is required to handle audio files for speech transcription. Make sure you have it installed and added to your path. Installation instructions can be found here: [FFMPEG download and installation](https://www.ffmpeg.org/download.html).
 
 ### TTS Configuration
-This step can be skipped if running MacOS. The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/*.json`: 
+This step can be skipped if running macOS. The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/*.json`: 
 
 **Available TTS engines:**
 
-| Engine | `tts_mode` | `tts_model_path` | Notes |
-|--------|-----------|------------------|-------|
-| macOS `say` | `"say"` | Ignored | Uses native macOS voice synthesis. Audio plays on server; no PCM streamed to browser. Requires macOS. |
-| Piper | `"piper"` | **Required (absolute directory path)** | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
+| Engine | `tts_mode` | Setup | Notes |
+|--------|-----------|-------|-------|
+| macOS `say` | `"say"` | None | Uses native macOS voice synthesis. Audio plays on server; no PCM streamed to browser. Requires macOS. |
+| Piper | `"piper"` | Place model files in `src/tts/voices/` | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
 
-**To switch TTS engines:**
-The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** to a directory containing a Piper ONNX model and its config file (e.g. `en_US-ryan-high.onnx` and `en_US-ryan-high.onnx.json`). Download the files here: https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ryan/high
+**To use Piper TTS (cross-platform):**
 
-1. Open the config file for the task mode you're running:
-   - `configs/demo_mode/convfill_simple_config.json` (default)
-   - `configs/demo_mode/convfill_full_config.json` (RAG+MCP mode)
+1. Download a Piper model (e.g., from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/)). You need the `.onnx` file and its corresponding `.onnx.json` config.
 
-2. Edit `tts_mode` to `"say"` or `"piper"`:
-   ```json
-   "tts_mode": "piper",
-   "tts_model_path": "ABSOLUTE PATH to folder with .onnx and .onnx.json"
+2. Create the `src/tts/voices/` directory and place both files there:
+   ```bash
+   mkdir -p src/tts/voices
+   cp en_US-ryan-high.onnx* src/tts/voices/
    ```
 
-3. Restart the web demo for the change to take effect.
+3. Set `tts_mode` to `"piper"` in your config:
+   ```json
+   "tts_mode": "piper"
+   ```
+
+4. Restart the web demo for the change to take effect.
 
 ## Starting the Demo
 
@@ -322,27 +324,31 @@ On first run, installs frontend dependencies (`npm ci`). Requires `ffmpeg` on yo
 
 ### TTS Configuration
 
-The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in `configs/demo_mode/convfill_overall_config.json` (top-level, applies to all task modes):
+The web demo uses text-to-speech (TTS) to synthesize audio responses. You can choose between two TTS engines by editing the `tts_mode` field in your config file (applies to all task modes):
 
 **Available TTS engines:**
 
-| Engine | `tts_mode` | `tts_model_path` | Notes |
-|--------|-----------|------------------|-------|
-| macOS `say` | `"say"` | Ignored | Uses native macOS voice synthesis. Audio plays on server; no PCM streamed to browser. Requires macOS. |
-| Piper | `"piper"` | **Required (absolute directory path)** | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
+| Engine | `tts_mode` | Setup | Notes |
+|--------|-----------|-------|-------|
+| macOS `say` | `"say"` | None | Uses native macOS voice synthesis. Audio plays on server; no PCM streamed to browser. Requires macOS. |
+| Piper | `"piper"` | Place model files in `src/tts/voices/` | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
 
-**To switch TTS engines:**
-The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** to a directory containing a Piper ONNX model and its config file (e.g. `en_US-ryan-high.onnx` and `en_US-ryan-high.onnx.json`). The directory must contain exactly one `.onnx` file. Download Piper voices from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/), which includes voices in multiple languages and styles.
+**To use Piper TTS (cross-platform):**
 
-1. Open `configs/demo_mode/convfill_overall_config.json` (the unified config for all task modes).
+1. Download a Piper model (e.g., from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/)). You need the `.onnx` file and its corresponding `.onnx.json` config.
 
-2. Edit the top-level `tts_mode` to `"say"` or `"piper"`:
-   ```json
-   "tts_mode": "piper",
-   "tts_model_path": "/path/to/model_dir"
+2. Create the `src/tts/voices/` directory and place both files there:
+   ```bash
+   mkdir -p src/tts/voices
+   cp en_US-ryan-high.onnx* src/tts/voices/
    ```
 
-3. Restart the web demo for the change to take effect.
+3. Set `tts_mode` to `"piper"` in your config:
+   ```json
+   "tts_mode": "piper"
+   ```
+
+4. Restart the web demo for the change to take effect.
 
 ## Citation 
 

@@ -4,8 +4,7 @@
     "backend_model_name": "claude-opus-4-7",
     "backend_model_mode": "claude",
     "num_history_turns": 1,
-    "tts_mode": "say",
-    "tts_model_path": "<path to the tts model directory you downloaded from piper -- must contain .onnx & .json files>",
+    "tts_mode": "piper",
     "modes": {
         "normal": {
             "backend_prompt_template_file": "configs/convfill_backend_prompts/convfill_backend_template_conv.txt"

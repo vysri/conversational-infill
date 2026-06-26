@@ -23,21 +23,22 @@ _SAY_VOICE = ""
 _state = {"mode": None, "model_path": None}
 
 
-def configure(mode: Literal["piper", "say"], model_path: Optional[str] = None) -> None:
+def configure(mode: Literal["piper", "say"]) -> None:
     if mode not in ("piper", "say"):
         raise ValueError(f"Unknown tts_mode: {mode!r}")
     if mode == "piper":
-        if not model_path:
-            raise ValueError("tts_mode 'piper' requires tts_model_path to be set")
-        if not os.path.isabs(model_path):
-            raise ValueError(f"tts_model_path must be an absolute path, got: {model_path!r}")
-        if not os.path.isdir(model_path):
-            raise ValueError(f"tts_model_path must be a directory, got: {model_path!r}")
-        onnx_files = glob.glob(os.path.join(model_path, "*.onnx"))
+        model_dir = os.path.join(os.path.dirname(__file__), "../../src/tts/voices")
+        model_dir = os.path.abspath(model_dir)
+        if not os.path.isdir(model_dir):
+            raise ValueError(f"TTS model directory not found: {model_dir!r}")
+        try:
+            onnx_files = glob.glob(os.path.join(model_dir, "*.onnx"))
+        except PermissionError as e:
+            raise ValueError(f"Permission denied reading TTS model directory: {model_dir!r}") from e
         if len(onnx_files) == 0:
-            raise ValueError(f"tts_model_path directory contains no .onnx files: {model_path!r}")
+            raise ValueError(f"No .onnx files found in {model_dir!r}")
         if len(onnx_files) > 1:
-            raise ValueError(f"tts_model_path directory must contain exactly one .onnx file, found {len(onnx_files)}: {onnx_files}")
+            raise ValueError(f"Expected exactly one .onnx file in {model_dir!r}, found {len(onnx_files)}: {onnx_files}")
         model_path = onnx_files[0]
     _state["mode"] = mode
     _state["model_path"] = model_path
