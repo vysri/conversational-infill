@@ -235,17 +235,16 @@ This step can be skipped if running MacOS. The web demo uses text-to-speech (TTS
 | Piper | `"piper"` | **Required (absolute directory path)** | ONNX-based neural TTS. Streams PCM audio to browser. Works cross-platform. |
 
 **To switch TTS engines:**
-The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** to a directory containing a Piper ONNX model and its config file (e.g. `en_US-ryan-high.onnx` and `en_US-ryan-high.onnx.json`). The directory must contain exactly one `.onnx` file. Download Piper voices from [rhasspy.github.io/piper-samples](https://rhasspy.github.io/piper-samples/), which includes voices in multiple languages and styles.
+The default is `"say"` (requires macOS). Switch to `"piper"` for cross-platform support and streamed browser audio. When `tts_mode` is `"say"`, the `tts_model_path` field is ignored. When `tts_mode` is `"piper"`, `tts_model_path` must be set to an **absolute path** to a directory containing a Piper ONNX model and its config file (e.g. `en_US-ryan-high.onnx` and `en_US-ryan-high.onnx.json`). Download the files here: https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ryan/high
 
 1. Open the config file for the task mode you're running:
-   - `configs/demo_mode/convfill_config.json` (normal mode)
-   - `configs/demo_mode/convfill_config_rag.json` (RAG mode)
-   - `configs/demo_mode/convfill_config_mcp.json` (MCP mode)
+   - `configs/demo_mode/convfill_simple_config.json` (default)
+   - `configs/demo_mode/convfill_full_config.json` (RAG+MCP mode)
 
 2. Edit `tts_mode` to `"say"` or `"piper"`:
    ```json
    "tts_mode": "piper",
-   "tts_model_path": "/path/to/model_dir"
+   "tts_model_path": "ABSOLUTE PATH to folder with .onnx and .onnx.json"
    ```
 
 3. Restart the web demo for the change to take effect.
