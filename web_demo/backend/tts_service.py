@@ -26,6 +26,7 @@ _state = {"mode": None, "model_path": None}
 def configure(mode: Literal["piper", "say"]) -> None:
     if mode not in ("piper", "say"):
         raise ValueError(f"Unknown tts_mode: {mode!r}")
+    model_path = None
     if mode == "piper":
         model_dir = os.path.join(os.path.dirname(__file__), "../../src/tts/voices")
         model_dir = os.path.abspath(model_dir)
