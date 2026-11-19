@@ -7,7 +7,7 @@
   <a href="https://huggingface.co/collections/vysri/convfill-inference-time-knowledge-transfer"><img src="https://img.shields.io/badge/🤗%20HuggingFace-Collection-yellow?style=flat" alt="HuggingFace Collection" /></a>
 </p>
 
-Check out our website here for visual and in-depth explanation: [ConvFill Website](https://convfill.cs.washington.edu/)
+Check out our website here for visual and in-depth explanation, and also a demo: [ConvFill Website](https://convfill.cs.washington.edu/)
 
 ---
 
