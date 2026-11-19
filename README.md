@@ -11,7 +11,7 @@ Check out our website here for visual and in-depth explanation and also a demo: 
 
 ---
 
-If you build something with ConvFill let us know! Here are some cool projects that use ConvFill:
+**If you build something with ConvFill let us know! Here are some cool projects that use ConvFill:**
 - [ConvFill in Korean](https://github.com/skykim/convfill-unity)
 - [ConvFill in Turkish](https://huggingface.co/atasoglu/gemma4-e2b-it-ConvFill-TR)
 
