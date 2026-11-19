@@ -7,12 +7,15 @@
   <a href="https://huggingface.co/collections/vysri/convfill-inference-time-knowledge-transfer"><img src="https://img.shields.io/badge/🤗%20HuggingFace-Collection-yellow?style=flat" alt="HuggingFace Collection" /></a>
 </p>
 
-Check out our website here for visual explanation: [ConvFill Website](https://convfill.cs.washington.edu/)
+Check out our website here for visual and in-depth explanation: [ConvFill Website](https://convfill.cs.washington.edu/)
 
-If you build something with ConvFill let us know! See below for some cool projects that extend or build on ConvFill.
+---
+
+If you build something with ConvFill let us know! Here are some cool projects that use ConvFill:
 - [ConvFill in Korean](https://github.com/skykim/convfill-unity)
 - [ConvFill in Turkish](https://huggingface.co/atasoglu/gemma4-e2b-it-ConvFill-TR)
 
+---
 
 **ConvFill** is a system for building voice agents that respond instantly *and* answer accurately — two goals that are normally at odds. It pairs a small, fast language model running locally with a large cloud model that does the heavy reasoning in the background, so the agent can start talking right away and fill in well-grounded answers as they become available. This repository contains the full system, a live voice demo, seven ready-to-use models, and everything needed to train your own.
 
