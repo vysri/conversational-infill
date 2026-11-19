@@ -344,14 +344,14 @@ This launches:
 If you use ConvFill, the dataset, or the released models in your work, please cite:
 
 ```bibtex
-@misc{srinivas2026thinkingspeakinginferencetimeknowledge,
-      title={Thinking While Speaking: Inference-Time Knowledge Transfer for Responsive and Intelligent Conversational Voice Agents},
-      author={Vidya Srinivas and Zachary Englhardt and Vikram Iyer and Shwetak Patel},
-      year={2026},
-      eprint={2511.07397},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2511.07397},
+@inproceedings{srinivas-etal-2026-thinking,
+    title = "Thinking While Speaking: Inference-Time Knowledge Transfer for Responsive and Intelligent Conversational Voice Agents",
+    author = "Srinivas, Vidya and Englhardt, Zachary and Iyer, Vikram and Patel, Shwetak",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2026",
+    year = "2026",
+    pages = "29148--29187",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2026.findings-emnlp.1371/"
 }
 ```
 
